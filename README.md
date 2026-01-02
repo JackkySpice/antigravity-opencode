@@ -2,208 +2,138 @@
 
 > Replicate Google AntiGravity IDE's agentic workflow in OpenCode
 
-This package provides a complete configuration to make OpenCode behave like Google's AntiGravity IDE, with **Planning → Execution → Verification** workflow and all the behavioral rules.
+This package adds the **AntiGravity workflow** to OpenCode - a structured 3-phase approach to AI-assisted development.
 
-## What You Get
+## What This Adds
 
-| AntiGravity Feature | OpenCode Implementation |
-|---------------------|------------------------|
-| PLANNING mode | `planning` agent - read-only research |
-| EXECUTION mode | `execution` agent - full implementation |
-| VERIFICATION mode | `verification` agent - test and verify |
-| System prompts | `prompts/*.md` instruction files |
-| Behavioral rules | `AGENTS.md` + instruction files |
-| MCP tools | `antigravity-mcp-server` (optional) |
+| Feature | OpenCode Default | With AntiGravity |
+|---------|------------------|------------------|
+| Primary agents | 2 (Build, Plan) | 3 (Planning, Execution, **Verification**) |
+| Planning mode | Basic read-only | Read-only + restricted bash |
+| Verification phase | ❌ None | ✅ Dedicated testing mode |
+| Behavioral rules | ❌ None | ✅ ConfidenceScore, aesthetics, etc. |
+| Artifact persistence | ❌ None | ✅ Versioned storage via MCP |
+| Cross-session memory | ❌ None | ✅ Knowledge system via MCP |
 
 ## Quick Start
 
-### 1. Copy Configuration
+### 1. Copy to Your Project
 
 ```bash
-# Clone this repo
 git clone https://github.com/JackkySpice/antigravity-opencode
 cd antigravity-opencode
 
-# Copy to your project
+# Copy config files
 cp opencode.json /path/to/your/project/
 cp -r prompts /path/to/your/project/
-cp -r .opencode /path/to/your/project/
 cp AGENTS.md /path/to/your/project/
 ```
 
-### 2. Or Install Globally
-
-```bash
-# Copy to global config
-cp opencode.json ~/.config/opencode/
-cp -r prompts ~/.config/opencode/
-mkdir -p ~/.config/opencode/agent
-cp .opencode/agent/*.md ~/.config/opencode/agent/
-cp AGENTS.md ~/.config/opencode/
-```
-
-### 3. Start OpenCode
+### 2. Start OpenCode
 
 ```bash
 cd /path/to/your/project
 opencode
 ```
 
-## Usage
+### 3. Use the Workflow
 
-### Switching Modes
-
-Use **Tab** to cycle between agents:
-
+Press **Tab** to cycle between modes:
 ```
-Planning → Execution → Verification → Planning ...
+Planning → Execution → Verification → Planning...
 ```
 
-Or @ mention an agent:
+Or use @mentions:
 ```
 @planning analyze this codebase
-@execution implement the approved plan
+@execution implement the plan
 @verification run all tests
 ```
 
-### Workflow
+## The 3-Phase Workflow
 
-1. **Planning Mode** (default)
-   - Research the codebase
-   - Create implementation plan
-   - Ask clarifying questions
-   - Request approval before coding
+### 1. Planning Mode
+- Research the codebase
+- Create implementation plan
+- Ask clarifying questions
+- **Cannot modify files**
 
-2. **Execution Mode** (Tab to switch)
-   - Implement changes
-   - Follow the plan
-   - Fix errors as they arise
+### 2. Execution Mode
+- Implement changes
+- Follow the approved plan
+- Fix errors as they arise
+- **Full file access**
 
-3. **Verification Mode** (Tab to switch)
-   - Run tests
-   - Check linting
-   - Verify everything works
+### 3. Verification Mode
+- Run tests and linting
+- Check build succeeds
+- Verify changes work
+- **Cannot modify source code**
 
-## File Structure
+## Files Included
 
 ```
 antigravity-opencode/
-├── opencode.json              # Main OpenCode config
-├── AGENTS.md                  # Project rules
+├── opencode.json              # Main config (agents, MCP, permissions)
+├── AGENTS.md                  # Workflow rules
 ├── prompts/
-│   ├── identity.md            # Core identity prompt
-│   ├── code-quality.md        # Code quality rules
-│   ├── artifacts.md           # Artifact system rules
-│   ├── debugging.md           # Debugging protocol
-│   ├── browser-automation.md  # Browser verification rules
-│   ├── web-design.md          # UI aesthetics ("Godly" dark mode)
+│   ├── identity.md            # Core agentic behavior
+│   ├── task-tracking.md       # Progress tracking rules
+│   ├── code-quality.md        # Code editing rules
+│   ├── artifacts.md           # ConfidenceScore system
+│   ├── debugging.md           # Debugging approach
+│   ├── browser-automation.md  # Browser testing rules
+│   ├── web-design.md          # UI aesthetics rules
 │   ├── git-workflow.md        # Git/commit rules
-│   ├── planning-agent.md      # Planning mode prompt
-│   ├── execution-agent.md     # Execution mode prompt
-│   └── verification-agent.md  # Verification mode prompt
-├── .opencode/
-│   └── agent/
-│       ├── planning.md        # Planning agent (markdown)
-│       ├── execution.md       # Execution agent (markdown)
-│       ├── verification.md    # Verification agent (markdown)
-│       └── browser.md         # Browser subagent (markdown)
-└── mcp-server/                # Optional MCP tools
-    └── (antigravity-mcp-server)
+│   ├── planning-agent.md      # Planning mode behavior
+│   ├── execution-agent.md     # Execution mode behavior
+│   └── verification-agent.md  # Verification mode behavior
+└── .opencode/agent/           # Agent markdown definitions
 ```
+
+## Optional: MCP Server
+
+For additional features (versioned artifacts, cross-session knowledge), install the MCP server:
+
+```bash
+# Clone the MCP server
+git clone https://github.com/JackkySpice/antigravity-mcp-server
+cd antigravity-mcp-server
+npm install
+npm run build
+
+# The opencode.json already references it at ./mcp-server/
+# Copy it to your project or update the path
+```
+
+### MCP Tools Provided
+
+| Tool | Purpose |
+|------|---------|
+| `notify_user` | User communication with ConfidenceScore |
+| `create_artifact` | Versioned implementation plans |
+| `save_knowledge` | Cross-session memory |
+| `search_knowledge` | Search saved knowledge |
+| `task_boundary` | Mode transition tracking |
 
 ## Configuration Details
 
 ### Agents
 
-| Agent | Mode | Temperature | Permissions |
-|-------|------|-------------|-------------|
-| `planning` | primary | 0.1 | Read-only, safe bash only |
-| `execution` | primary | 0.3 | Full access, asks for dangerous ops |
-| `verification` | primary | 0.1 | Test commands allowed, no source edits |
-| `explore` | subagent | 0.1 | Read-only |
-| `browser` | subagent | 0.1 | Browser automation via Playwright MCP |
+| Agent | Mode | Permissions |
+|-------|------|-------------|
+| `planning` | primary | Read-only, safe bash only |
+| `execution` | primary | Full access, asks for dangerous ops |
+| `verification` | primary | Test commands only, no source edits |
+| `explore` | subagent | Read-only |
+| `browser` | subagent | Playwright MCP |
 
-### Permissions
+### Key Behavioral Rules
 
-Planning agent can only run safe commands:
-- `git status`, `git log`, `git diff`, `git branch`
-- `ls`, `cat`, `head`, `tail`, `grep`, `find`, `tree`, `wc`
-
-Execution agent asks for confirmation on:
-- `git push`
-- `rm -rf`
-- `npm publish`
-
-Verification agent can run test commands freely.
-
-## Browser Automation
-
-The `browser` subagent uses Playwright MCP for web testing:
-
-```
-@browser navigate to http://localhost:3000 and verify the page loads
-@browser take a screenshot of the current page
-@browser click the login button and verify the form appears
-```
-
-### Browser Rules (from AntiGravity)
-
-1. **NEVER trust claims - verify with screenshots**
-2. **Check state BEFORE and AFTER actions**
-3. **If page is loading, wait and screenshot again**
-4. **Always check browser console for errors**
-
-The Playwright MCP server provides:
-- `navigate` - Go to URL
-- `click` - Click elements
-- `type` - Enter text
-- `screenshot` - Capture page state
-- `get_dom` - Inspect DOM structure
-- Device emulation (143 presets)
-
-## Optional: MCP Server
-
-For additional tools (task tracking, knowledge items, artifacts), install the MCP server:
-
-```bash
-cd mcp-server
-npm install
-npm run build
-```
-
-Then uncomment the MCP section in `opencode.json`.
-
-## Customization
-
-### Change Models
-
-Edit `opencode.json`:
-```json
-{
-  "model": "anthropic/claude-sonnet-4-20250514",
-  "agent": {
-    "planning": {
-      "model": "openai/gpt-4o"
-    }
-  }
-}
-```
-
-### Add More Instructions
-
-Add files to `prompts/` and reference them:
-```json
-{
-  "instructions": [
-    "prompts/identity.md",
-    "prompts/my-custom-rules.md"
-  ]
-}
-```
-
-### Modify Agent Behavior
-
-Edit the markdown files in `.opencode/agent/` or the prompt files in `prompts/`.
+1. **Keep going until done** - Don't stop at partial completion
+2. **Aesthetics matter** - Web apps must look modern and polished
+3. **Verify before claiming success** - Run tests, check builds
+4. **Don't guess** - Use tools to verify file contents
 
 ## Comparison with AntiGravity
 
@@ -211,13 +141,13 @@ Edit the markdown files in `.opencode/agent/` or the prompt files in `prompts/`.
 |---------|-------------|--------------|
 | Planning/Execution/Verification | ✅ Built-in | ✅ Via agents |
 | System prompts | ✅ Injected | ✅ Via instructions |
-| Ephemeral reminders | ✅ Auto-injected | ⚠️ Via MCP (manual) |
-| Model routing | ✅ Server-side | ⚠️ Per-agent config |
-| Thinking budgets | ✅ API params | ❌ Not supported |
 | Browser automation | ✅ Playwright | ✅ Playwright MCP |
-| Artifact system | ✅ Built-in | ✅ Via MCP server |
+| Artifact system | ✅ Built-in | ✅ Via MCP |
+| Cross-session memory | ✅ Built-in | ✅ Via MCP |
+| Ephemeral reminders | ✅ Auto-injected | ⚠️ Via prompts |
+| Thinking budgets | ✅ API params | ❌ Not supported |
 
-**Coverage: ~90% of AntiGravity's workflow**
+**Coverage: ~95% of AntiGravity's workflow**
 
 ## Links
 

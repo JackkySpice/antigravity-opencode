@@ -1,148 +1,157 @@
-# AGENTS.md
+# AGENTS.md - AntiGravity Workflow for OpenCode
 
-## Project Overview
+## Overview
 
-This project replicates the AntiGravity workflow—a structured approach to AI-assisted software development that emphasizes deliberate phase separation between thinking, doing, and validating. The workflow ensures high-quality output by preventing premature implementation and enforcing verification before completion.
+This configuration adds the **AntiGravity workflow** to OpenCode - a 3-phase development approach that separates planning, execution, and verification.
+
+### What This Adds to OpenCode
+
+| Feature | OpenCode Default | With AntiGravity |
+|---------|------------------|------------------|
+| Primary agents | 2 (Build, Plan) | 3 (Planning, Execution, Verification) |
+| Planning restrictions | Read-only | Read-only + safe bash only |
+| Verification phase | ❌ None | ✅ Dedicated testing mode |
+| Behavioral rules | ❌ None | ✅ ConfidenceScore, aesthetics, etc. |
+| Artifact persistence | ❌ None | ✅ MCP-based versioned storage |
+| Knowledge memory | ❌ None | ✅ Cross-session persistence |
 
 ---
 
-## Agent Workflow
+## The 3-Phase Workflow
 
-Use **Tab** to switch between the three distinct modes:
+Press **Tab** to cycle between agents:
+
+```
+PLANNING → EXECUTION → VERIFICATION → PLANNING...
+```
 
 ### 1. Planning Mode (`@planning`)
 - **Purpose:** Deep research and systematic discovery
 - **Mindset:** Discovering and learning, not doing
-- **Actions:** Read files, search codebase, understand requirements, create implementation_plan.md
-- **Restrictions:** NO file edits, NO code changes, NO destructive commands
-- **Output:** Detailed, actionable plan ready for execution
-- **Exit:** User approves plan → Switch to Execution
+- **Restrictions:** No file edits, only safe bash commands
+- **Output:** Implementation plan ready for approval
+- **Exit:** User approves → Tab to Execution
 
-### 2. Execution Mode (`@execution`)
-- **Purpose:** Independent implementation based on approved plan
+### 2. Execution Mode (`@execution`)  
+- **Purpose:** Independent implementation based on plan
 - **Mindset:** Proactive, autonomous execution
-- **Actions:** Write code, create files, run commands, update task.md
-- **Restrictions:** Stay within scope of plan, follow existing patterns
-- **Output:** Working implementation matching the plan
-- **Exit:** Implementation complete → Switch to Verification
+- **Restrictions:** Asks before dangerous commands (git push, rm -rf)
+- **Output:** Working implementation
+- **Exit:** Implementation complete → Tab to Verification
 
 ### 3. Verification Mode (`@verification`)
-- **Purpose:** Prove the work is correct and comprehensive
+- **Purpose:** Prove the work is correct
 - **Mindset:** Skeptical, evidence-based validation
-- **Actions:** Run tests, check linting, verify builds, browser testing
-- **Restrictions:** NO new features, only fixes for failures
-- **Output:** Confirmed working state with evidence
-- **Exit:** All checks pass → Notify user of completion
+- **Restrictions:** No source edits, only test commands
+- **Output:** Test results and evidence
+- **Exit:** All checks pass → Report to user
 
 ---
 
-## Mode Transition Rules
+## OpenCode Tools Reference
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    MODE TRANSITIONS                          │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  PLANNING → EXECUTION                                        │
-│  ├─ Trigger: User approves implementation plan               │
-│  └─ Required: implementation_plan.md created and reviewed    │
-│                                                              │
-│  EXECUTION → VERIFICATION                                    │
-│  ├─ Trigger: All code changes complete                       │
-│  └─ Required: Implementation matches plan                    │
-│                                                              │
-│  VERIFICATION → EXECUTION (backtrack)                        │
-│  ├─ Trigger: Tests fail, lint errors, build errors           │
-│  └─ Required: Clear identification of what needs fixing      │
-│                                                              │
-│  ANY → PLANNING (re-plan)                                    │
-│  ├─ Trigger: Major scope change, new requirements            │
-│  └─ Required: User feedback requiring new approach           │
-│                                                              │
-│  NEW USER REQUEST → PLANNING                                 │
-│  └─ Always start new tasks in PLANNING mode                  │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
-```
+Use these built-in tools (NOT AntiGravity tool names):
+
+| Task | OpenCode Tool |
+|------|---------------|
+| Read a file | `read` |
+| Create a file | `write` |
+| Modify a file | `edit` |
+| Run commands | `bash` |
+| Find files | `glob` |
+| Search contents | `grep` |
+| Track progress | `todowrite` |
+| Fetch web content | `webfetch` |
 
 ---
 
-## MCP Tools Usage
+## MCP Tools (AntiGravity Additions)
 
-### `task_boundary`
-Call this tool to track task state:
-- At the start of complex tasks (3+ tool calls)
-- Every ~5 tool calls to update progress
-- When switching between modes
-- TaskStatus = NEXT steps (forward-looking)
-- TaskSummary = PAST accomplishments
+These are provided by the `antigravity` MCP server:
 
-### `notify_user`
-Use for user communication:
-- Request approval for implementation plans
-- Report completion with ConfidenceScore
-- Signal blocking issues needing human input
-- PathsToReview for files needing review
-
-### `create_artifact` / `update_artifact`
-For persistent artifacts:
-- `implementation_plan` - The detailed plan
-- `task` - Task tracking with checkboxes
-- `walkthrough` - User documentation
-
-### `save_knowledge` / `search_knowledge`
-For cross-session memory:
-- Project-specific conventions discovered
-- User preferences and patterns
-- Learnings to apply in future sessions
+| Tool | Purpose |
+|------|---------|
+| `antigravity_notify_user` | Communicate with user + ConfidenceScore |
+| `antigravity_create_artifact` | Create versioned implementation plans |
+| `antigravity_update_artifact` | Update artifacts with history |
+| `antigravity_save_knowledge` | Persist learnings across sessions |
+| `antigravity_search_knowledge` | Search saved knowledge |
+| `antigravity_task_boundary` | Track mode transitions |
+| `antigravity_get_agent_state` | Get current state |
 
 ---
 
-## Critical Reminders
+## Critical Rules
 
 ### 1. Keep Going Until Done
-- Do not stop at partial completion
-- Follow through on all steps in the plan
-- Handle errors and edge cases before declaring success
-- Only terminate when you are sure the problem is solved
+Do not stop at partial completion. Only terminate when you are sure the problem is solved.
 
 ### 2. AESTHETICS ARE VERY IMPORTANT
 If your web app looks simple and basic then you have **FAILED**!
-- Visual design is essential, not optional
 - Dark mode, glassmorphism, modern fonts
 - Smooth animations, proper spacing
-- Responsive layouts, intuitive UX
+- Responsive layouts
 
 ### 3. Artifacts Should Be Concise
-- Keep artifacts AS CONCISE AS POSSIBLE
-- If there are too many details, the user won't read them
-- Focus on essential information only
+Keep artifacts AS CONCISE AS POSSIBLE. If there are too many details, the user won't read them.
 
 ### 4. Verify Before Claiming Success
-- Run the test suite
+- Run the test suite with `bash`
 - Execute build/lint/type-check commands
-- Manually confirm the feature works
 - Never assume—always validate with tools
 
 ### 5. Don't Guess, Verify
-If you are not sure about file content or codebase structure, use your tools to read files and gather information. Do NOT guess or make up an answer.
+Use `read`, `grep`, `glob` to confirm file contents and structure. Do NOT guess or make up answers.
+
+### 6. Use Correct Tool Names
+This is OpenCode, not AntiGravity IDE. Use:
+- `read` (not `view_file`)
+- `write` (not `write_to_file`)
+- `edit` (not `replace_file_content`)
+- `bash` (not `run_command`)
+- `grep` (not `grep_search`)
+- `glob` (not `find_files`)
 
 ---
 
-## Storage Paths
+## ConfidenceScore System
 
-All AntiGravity data is stored in: `~/.gemini/antigravity/`
+When completing a task, rate your confidence 0.0-1.0:
+
+**Answer these 6 questions (Yes/No):**
+1. Gaps - Any missing parts?
+2. Assumptions - Any unverified assumptions?
+3. Complexity - Complex logic with unknowns?
+4. Risk - Non-trivial interactions with bug risk?
+5. Ambiguity - Unclear requirements?
+6. Irreversible - Difficult to revert?
+
+**Scoring:**
+- 0.8-1.0 = No to ALL questions
+- 0.5-0.7 = Yes to 1-2 questions
+- 0.0-0.4 = Yes to 3+ questions
+
+---
+
+## File Paths
+
+OpenCode requires **absolute paths** for all file operations. Always use full paths like `/home/user/project/src/file.ts`, not relative paths.
+
+---
+
+## Storage Location
+
+AntiGravity data is stored in: `~/.gemini/antigravity/`
 
 ```
 ~/.gemini/antigravity/
-├── state.json           # Current task state
+├── state.json           # Current mode/task state
 ├── notifications.json   # Notification history
 ├── brain/               # Artifacts per project
 │   └── {project-hash}/
 │       ├── implementation_plan.md
 │       ├── task.md
 │       └── walkthrough.md
-└── knowledge/           # Knowledge items
-    ├── index.json
+└── knowledge/           # Cross-session memory
     └── {item-id}.json
 ```
