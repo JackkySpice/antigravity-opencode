@@ -5,7 +5,8 @@
     "prompts/identity.md",
     "prompts/code-quality.md",
     "prompts/artifacts.md",
-    "prompts/debugging.md"
+    "prompts/debugging.md",
+    "prompts/browser-automation.md"
   ],
 
   "model": "anthropic/claude-sonnet-4-20250514",
@@ -100,6 +101,19 @@
         "edit": false,
         "bash": false
       }
+    },
+
+    "browser": {
+      "description": "Browser automation for web testing and verification.",
+      "mode": "subagent",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/browser-automation.md}",
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
     }
   },
 
@@ -111,6 +125,11 @@
       "environment": {
         "ANTIGRAVITY_HOME": "{env:HOME}/.antigravity"
       }
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@anthropic/mcp-playwright"],
+      "enabled": true
     }
   },
 

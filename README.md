@@ -95,6 +95,7 @@ antigravity-opencode/
 │   ├── code-quality.md        # Code quality rules
 │   ├── artifacts.md           # Artifact system rules
 │   ├── debugging.md           # Debugging protocol
+│   ├── browser-automation.md  # Browser verification rules
 │   ├── planning-agent.md      # Planning mode prompt
 │   ├── execution-agent.md     # Execution mode prompt
 │   └── verification-agent.md  # Verification mode prompt
@@ -102,7 +103,8 @@ antigravity-opencode/
 │   └── agent/
 │       ├── planning.md        # Planning agent (markdown)
 │       ├── execution.md       # Execution agent (markdown)
-│       └── verification.md    # Verification agent (markdown)
+│       ├── verification.md    # Verification agent (markdown)
+│       └── browser.md         # Browser subagent (markdown)
 └── mcp-server/                # Optional MCP tools
     └── (antigravity-mcp-server)
 ```
@@ -117,6 +119,7 @@ antigravity-opencode/
 | `execution` | primary | 0.3 | Full access, asks for dangerous ops |
 | `verification` | primary | 0.1 | Test commands allowed, no source edits |
 | `explore` | subagent | 0.1 | Read-only |
+| `browser` | subagent | 0.1 | Browser automation via Playwright MCP |
 
 ### Permissions
 
@@ -130,6 +133,31 @@ Execution agent asks for confirmation on:
 - `npm publish`
 
 Verification agent can run test commands freely.
+
+## Browser Automation
+
+The `browser` subagent uses Playwright MCP for web testing:
+
+```
+@browser navigate to http://localhost:3000 and verify the page loads
+@browser take a screenshot of the current page
+@browser click the login button and verify the form appears
+```
+
+### Browser Rules (from AntiGravity)
+
+1. **NEVER trust claims - verify with screenshots**
+2. **Check state BEFORE and AFTER actions**
+3. **If page is loading, wait and screenshot again**
+4. **Always check browser console for errors**
+
+The Playwright MCP server provides:
+- `navigate` - Go to URL
+- `click` - Click elements
+- `type` - Enter text
+- `screenshot` - Capture page state
+- `get_dom` - Inspect DOM structure
+- Device emulation (143 presets)
 
 ## Optional: MCP Server
 
@@ -184,10 +212,10 @@ Edit the markdown files in `.opencode/agent/` or the prompt files in `prompts/`.
 | Ephemeral reminders | ✅ Auto-injected | ⚠️ Via MCP (manual) |
 | Model routing | ✅ Server-side | ⚠️ Per-agent config |
 | Thinking budgets | ✅ API params | ❌ Not supported |
-| Browser automation | ✅ Playwright | ❌ Use browser MCP |
+| Browser automation | ✅ Playwright | ✅ Playwright MCP |
 | Artifact system | ✅ Built-in | ✅ Via MCP server |
 
-**Coverage: ~85-90% of AntiGravity's workflow**
+**Coverage: ~90% of AntiGravity's workflow**
 
 ## Links
 
