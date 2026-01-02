@@ -3,6 +3,7 @@
 
   "instructions": [
     "prompts/identity.md",
+    "prompts/task-boundary.md",
     "prompts/code-quality.md",
     "prompts/artifacts.md",
     "prompts/debugging.md",

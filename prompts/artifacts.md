@@ -2,34 +2,35 @@
 
 ## Implementation Plan Structure
 
-### Part 1: Code Changes
+Create `implementation_plan.md` during PLANNING mode with this structure:
 
-Outline the specific code modifications required:
+```markdown
+# Implementation Plan: [Feature Name]
 
-1. **Step 1**: Description of first change
-   - File(s) affected
-   - What to add/modify/remove
+## Overview
+[1-2 sentence summary of the approach]
 
-2. **Step 2**: Description of second change
-   - File(s) affected
-   - What to add/modify/remove
+## Part 1: Code Changes
 
-3. Continue as needed...
+### Step 1: [Component Name]
+- [ ] Change 1
+- [ ] Change 2
 
-### Part 2: Verification Plan
+### Step 2: [Component Name]
+- [ ] Change 1
 
-Define how to validate the implementation:
-
-1. Unit tests to run
-2. Integration tests to run
-3. Manual verification steps
-4. Expected outcomes
+## Part 2: Verification Plan
+- [ ] Run linting
+- [ ] Run tests
+- [ ] Verify in browser
+- [ ] Check edge cases
+```
 
 ---
 
 ## Task Tracking
 
-Use checkbox syntax to track progress:
+Use `task.md` to track progress with checkbox syntax:
 
 | Symbol | Status      | Meaning                          |
 |--------|-------------|----------------------------------|
@@ -40,9 +41,15 @@ Use checkbox syntax to track progress:
 ### Example
 
 ```markdown
+# Task: Implement User Authentication
+
+## Checklist
 - [x] Define data models
 - [x] Create API endpoints
 - [/] Implement authentication
+  - [x] Password hashing
+  - [/] JWT generation
+  - [ ] Refresh tokens
 - [ ] Write unit tests
 - [ ] Update documentation
 ```
@@ -51,53 +58,52 @@ Use checkbox syntax to track progress:
 
 ## ConfidenceScore System
 
-Rate implementation confidence on a scale of **0.0 to 1.0**.
+When using `notify_user`, rate your confidence from **0.0 to 1.0**.
 
-### Questions to Answer
+### The 6-Question Framework
 
-1. Do I fully understand the requirements?
-2. Do I know which files need to be modified?
-3. Do I understand the existing code patterns?
-4. Do I have a clear verification strategy?
-5. Are there any ambiguities or unknowns?
-6. Have I considered edge cases and error handling?
+Before setting your ConfidenceScore, answer these questions (Yes/No):
 
-### Scoring Guidelines
+1. **Gaps** - Are there any missing parts in the solution?
+2. **Assumptions** - Are there any unverified assumptions?
+3. **Complexity** - Is there complex logic with unknowns?
+4. **Risk** - Are there non-trivial interactions with bug risk?
+5. **Ambiguity** - Are there unclear requirements forcing design choices?
+6. **Irreversible** - Is this change difficult to revert?
 
-| Score       | Meaning                                                  |
-|-------------|----------------------------------------------------------|
-| 0.0 - 0.3   | Low confidence - significant unknowns, need clarification |
-| 0.4 - 0.6   | Medium confidence - some gaps, may need iteration        |
-| 0.7 - 0.8   | High confidence - clear path forward, minor uncertainties |
-| 0.9 - 1.0   | Very high confidence - fully understood, ready to execute |
+### Scoring Rules
+
+| Count of "Yes" | Score Range | Meaning |
+|----------------|-------------|---------|
+| 0 | 0.8 - 1.0 | High confidence - proceed |
+| 1-2 | 0.5 - 0.7 | Medium confidence - some gaps |
+| 3+ | 0.0 - 0.4 | Low confidence - need clarification |
 
 ### Example
 
 ```
 ConfidenceScore: 0.85
-- Requirements: Clear
-- Files: Identified
-- Patterns: Understood
-- Verification: Defined
-- Unknowns: Minor (API rate limits)
-- Edge cases: Considered
+ConfidenceJustification: "All 6 questions answered No. Clear requirements, known patterns, reversible changes."
 ```
 
 ---
 
-## Rules
+## Artifact Rules
 
-1. **Artifacts should be concise**
+1. **Artifacts should be AS CONCISE AS POSSIBLE**
    - Focus on essential information
-   - Avoid unnecessary verbosity
+   - If there are too many details, the user will not read it
    - Use bullet points and tables
 
 2. **Request review before execution mode**
-   - Present the implementation plan
-   - Wait for user approval
-   - Clarify any questions before proceeding
+   - If you modified implementation_plan.md, notify user for review
+   - Wait for approval before switching to EXECUTION mode
 
 3. **Update task tracking as you work**
    - Mark tasks `[/]` when starting
    - Mark tasks `[x]` when complete
    - Keep the artifact current with progress
+
+4. **All artifacts must be in Markdown (.md) format**
+   - If you need to include code, use code blocks
+   - Embed images with `![caption](path)` syntax
