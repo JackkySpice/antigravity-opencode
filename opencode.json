@@ -6,7 +6,9 @@
     "prompts/code-quality.md",
     "prompts/artifacts.md",
     "prompts/debugging.md",
-    "prompts/browser-automation.md"
+    "prompts/browser-automation.md",
+    "prompts/web-design.md",
+    "prompts/git-workflow.md"
   ],
 
   "model": "anthropic/claude-sonnet-4-20250514",

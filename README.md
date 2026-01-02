@@ -96,6 +96,8 @@ antigravity-opencode/
 │   ├── artifacts.md           # Artifact system rules
 │   ├── debugging.md           # Debugging protocol
 │   ├── browser-automation.md  # Browser verification rules
+│   ├── web-design.md          # UI aesthetics ("Godly" dark mode)
+│   ├── git-workflow.md        # Git/commit rules
 │   ├── planning-agent.md      # Planning mode prompt
 │   ├── execution-agent.md     # Execution mode prompt
 │   └── verification-agent.md  # Verification mode prompt
