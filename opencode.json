@@ -1,0 +1,138 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "instructions": [
+    "prompts/identity.md",
+    "prompts/code-quality.md",
+    "prompts/artifacts.md",
+    "prompts/debugging.md"
+  ],
+
+  "model": "anthropic/claude-sonnet-4-20250514",
+  "small_model": "anthropic/claude-haiku-4-20250514",
+
+  "default_agent": "planning",
+
+  "agent": {
+    "planning": {
+      "description": "Research and plan before implementing. No file modifications allowed.",
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/planning-agent.md}",
+      "tools": {
+        "write": false,
+        "edit": false
+      },
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "git status": "allow",
+          "git log*": "allow",
+          "git diff*": "allow",
+          "git branch*": "allow",
+          "ls *": "allow",
+          "cat *": "allow",
+          "head *": "allow",
+          "tail *": "allow",
+          "grep *": "allow",
+          "find *": "allow",
+          "tree *": "allow",
+          "wc *": "allow",
+          "*": "deny"
+        }
+      }
+    },
+
+    "execution": {
+      "description": "Implement changes autonomously based on approved plans.",
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "temperature": 0.3,
+      "prompt": "{file:./prompts/execution-agent.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "git push*": "ask",
+          "rm -rf *": "ask",
+          "npm publish*": "ask",
+          "*": "allow"
+        }
+      }
+    },
+
+    "verification": {
+      "description": "Test and verify all changes. Run tests, check quality.",
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "temperature": 0.1,
+      "prompt": "{file:./prompts/verification-agent.md}",
+      "tools": {
+        "write": false,
+        "edit": false
+      },
+      "permission": {
+        "edit": "ask",
+        "bash": {
+          "npm test*": "allow",
+          "yarn test*": "allow",
+          "pnpm test*": "allow",
+          "pytest*": "allow",
+          "go test*": "allow",
+          "cargo test*": "allow",
+          "make test*": "allow",
+          "npm run lint*": "allow",
+          "npm run build*": "allow",
+          "git status": "allow",
+          "git diff*": "allow",
+          "*": "ask"
+        }
+      }
+    },
+
+    "explore": {
+      "description": "Quick codebase exploration and search.",
+      "mode": "subagent",
+      "model": "anthropic/claude-haiku-4-20250514",
+      "temperature": 0.1,
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false
+      }
+    }
+  },
+
+  "mcp": {
+    "antigravity": {
+      "type": "local",
+      "command": ["node", "./mcp-server/dist/index.js"],
+      "enabled": true,
+      "environment": {
+        "ANTIGRAVITY_HOME": "{env:HOME}/.antigravity"
+      }
+    }
+  },
+
+  "permission": {
+    "edit": "allow",
+    "bash": "allow"
+  },
+
+  "compaction": {
+    "auto": true,
+    "prune": true
+  },
+
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      "dist/**",
+      "build/**",
+      ".git/**",
+      "coverage/**",
+      "__pycache__/**",
+      "*.log"
+    ]
+  }
+}
