@@ -125,7 +125,7 @@
       "command": ["node", "./mcp-server/dist/index.js"],
       "enabled": true,
       "environment": {
-        "ANTIGRAVITY_HOME": "{env:HOME}/.antigravity"
+        "ANTIGRAVITY_HOME": "{env:HOME}/.gemini/antigravity"
       }
     },
     "playwright": {
